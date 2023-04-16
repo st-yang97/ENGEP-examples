@@ -52,6 +52,6 @@ locations=read.csv('.../osmloc.csv',row.names = 1)
 gene_expressions = as.data.frame(engep_predict)
 locations = locations[rownames(gene_expressions),]
 
-draw_grid(ncol(gene_expressions),locations,gene_expressions)
+plot_exp_pattern(ncol(gene_expressions),locations,gene_expressions)
 ```
 ![image](https://github.com/st-yang97/ENGEP-examples/blob/master/docs/genes_of_osmFISH.png)
