@@ -54,4 +54,4 @@ locations = locations[rownames(gene_expressions),]
 
 draw_grid(ncol(gene_expressions),locations,gene_expressions)
 ```
-
+![image](https://github.com/st-yang97/ENGEP-examples/blob/master/docs/genes_of_osmFISH.png)
