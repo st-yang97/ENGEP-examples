@@ -205,7 +205,8 @@ For genes belonging to novel archetypes, we utilize hierarchical clustering to g
 unsimilar_genes  = names(maxcor)[which(maxcor<threshold)]
 corMat_un <- 
     stats::cor(as.matrix(t(pre_un@assays$RNA@scale.data[unsimilar_genes,])), 
-               as.matrix(t(pre_un@assays$RNA@scale.data[unsimilar_genes,])),                method = "pearson")
+               as.matrix(t(pre_un@assays$RNA@scale.data[unsimilar_genes,])),                
+               method = "pearson")
 dist_un <- 1-corMat_un
 dist_un <- as.dist(dist_un)
 hc <- hclust(dist_un, method = "ward.D")
