@@ -1,6 +1,6 @@
-# Identification of novel spatial archetypes
+# Identification of novel spatial archetypes in MERFISH
 
-This example use ENGEP to predict unmeasured genes and detect novel spatial archetypes for MERFISH .
+This example use ENGEP to predict unmeasured genes and detect novel spatial archetypes for MERFISH.
 
 #### Get the predicted expression levels of unmeasured genes
 
@@ -63,18 +63,13 @@ First, we use MERINGUE to determine the spatially variable genes.
 
 ```
 suppressMessages(library(MERINGUE))
-
 cell_loc = read.csv('.../m2s300loc.csv',row.names = 1)
-
 mat <- normalizeCounts(counts = merfish,
-                       log=TRUE,
+                       log=FALSE,
                        verbose=TRUE)
-
 w <- getSpatialNeighbors(cell_loc,verbose=TRUE)
-
 test <- rownames(mat)
 I <- getSpatialPatterns(mat[test,], w)
-
 results.filter <- filterSpatialPatterns(mat = mat[test,],
                                         I = I,
                                         w = w,
@@ -119,7 +114,7 @@ We can get expression patterns of these known archetypes.
 
 ```
 arche_exp_log <- get_expression(out.id,mer@assays$RNA@data[resultsfilter,])
-gene_expressions = as.data.frame(arche_exp_log)
+gene_expressions = t(as.data.frame(arche_exp_log))
 locations = as.data.frame(cell_loc)
 locations = rename(locations, X0=X, X1=Y)
 plot_exp_pattern(ncol(gene_expressions),locations,gene_expressions,n_col=5)
@@ -128,26 +123,22 @@ plot_exp_pattern(ncol(gene_expressions),locations,gene_expressions,n_col=5)
 
 
 
-#### Identifification of novel spatial archetypes
+#### Identification of novel spatial archetypes
 
 For each gene that has not been spatially measured, we aim to identify its closest known spatial archetype based on its predicted gene expression and the expression profifile of known archetypes.
 
-we use MERINGUE to determine the spatially variable genes in the predicted genes.
+We use MERINGUE to determine the spatially variable genes in the predicted genes.
 
 ```
 pre_un = t(as.matrix(engep_predict))
-
-cell_loc <- cell_loc[colnames(pre_un),]
-
-mat <- normalizeCounts(counts = pre_un,
-                       log=TRUE,
+counts <- cleanCounts(counts = pre_un,plot=FALSE,verbose=TRUE)
+cell_loc <- cell_loc[colnames(counts),]
+mat <- normalizeCounts(counts = counts,
+                       log=FALSE,
                        verbose=TRUE)
-
-w <- getSpatialNeighbors(cell_loc,verbose=TRUE)#, filterDist =5)
-
+w <- getSpatialNeighbors(cell_loc,verbose=TRUE)
 test <- rownames(mat)
 I <- getSpatialPatterns(mat[test,], w)
-
 results.filter.un <- filterSpatialPatterns(mat = mat[test,],
                                         I = I,
                                         w = w,
@@ -164,7 +155,7 @@ pre_un <- CreateSeuratObject(pre_un,project = "sc_use",min.cells = 0,min.feature
 pre_un <- NormalizeData(object = pre_un,normalization.method = "LogNormalize")
 pre_un <- ScaleData(object = pre_un)
 
-corMat <- stats::cor(as.matrix(metaexp),
+corMat <- stats::cor(as.matrix(t(arche_exp)),
                      as.matrix(t(as.matrix(pre_un@assays$RNA@scale.data) [resultsfilter_un,])), method = "pearson")
 ```
 
@@ -187,7 +178,7 @@ c <- apply(as.matrix(pre_un@assays$RNA@scale.data[resultsfilter_un,],
            partition_threshold)
 
 diag(c) <- 0
-threshold <- sum(c)/((dim(pre_un2)[1])*(dim(pre_un2)[1]-1))
+threshold <- sum(c)/((dim(pre_un)[1])*(dim(pre_un)[1]-1))
 plot_score(maxcor,threshold=0.232884)
 ```
 ![image](https://github.com/st-yang97/ENGEP-examples/blob/master/docs/scores.png)
@@ -203,26 +194,30 @@ cellidx = apply(corMat_similar ,2,which.max)
 arche_exp_n <- get_expression(cellidx,pre_un@assays$RNA@scale.data[resultsfilter_un,])
 #plot
 arche_exp_n_log <- get_expression(cellidx,pre_un@assays$RNA@data[resultsfilter_un,])
-gene_expressions <- as.data.frame(arche_exp_n_log)
-plot_exp_pattern(ncol(as.data.frame(gene_expressions)),locations,gene_expressions,n_col=5)
+gene_expressions <- t(as.data.frame(arche_exp_n_log))
+plot_exp_pattern(ncol(gene_expressions),locations,gene_expressions,n_col=5)
 ```
 ![image](https://github.com/st-yang97/ENGEP-examples/blob/master/docs/known_n.png)
 
 For genes belonging to novel archetypes, we utilize hierarchical clustering to group them into distinct archetypes.
 
 ```
-unsimilar_genes  = names(maxcor)[which(maxcor<0.232884)]
-corMat_un <- stats::cor(as.matrix(t(pre_un@assays$RNA@scale.data[unsimilar_genes,])),
-                        as.matrix(t(pre_un@assays$RNA@scale.data[unsimilar_genes,])),                         method = "pearson")
+unsimilar_genes  = names(maxcor)[which(maxcor<threshold)]
+corMat_un <- 
+    stats::cor(as.matrix(t(pre_un@assays$RNA@scale.data[unsimilar_genes,])), 
+               as.matrix(t(pre_un@assays$RNA@scale.data[unsimilar_genes,])),                method = "pearson")
 dist_un <- 1-corMat_un
 dist_un <- as.dist(dist_un)
 hc <- hclust(dist_un, method = "ward.D")
 rect.hclust(hcc,k=3)
 id_un = cutree(hcc,k=3)
-arche_exp_un <- get_expression(id_un,pre_un@assays$RNA@scale.data[resultsfilter_un,])
+arche_exp_un <- 
+    get_expression(id_un,pre_un@assays$RNA@scale.data[resultsfilter_un,])
 #plot
-arche_exp_un_log <- get_expression(id_un,pre_un@assays$RNA@data[resultsfilter_un,])
-gene_expressions <- as.data.frame(arche_exp_un_log)
+arche_exp_un_log <- 
+    get_expression(id_un,pre_un@assays$RNA@data[resultsfilter_un,])
+gene_expressions <- t(as.data.frame(arche_exp_un_log))
 plot_exp_pattern(ncol(as.data.frame(gene_expressions)),locations,gene_expressions,n_col=3)
 ```
 ![image](https://github.com/st-yang97/ENGEP-examples/blob/master/docs/novel.png)
+
