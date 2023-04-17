@@ -2,17 +2,17 @@
 
 ## Introduction
 
-This repository contains examples on the usage of [ENGEP](https://github.com/st-yang97/ENGEP) 
+This repository contains examples on the usage of [ENGEP](https://github.com/Zhangxf-ccnu/ENGEP) 
 
 ## Contents
 
 ### Prediction gene expression of unmeasured genes and identification of novel spatial archetypes in osmFISH
 
-This [example](https://github.com/st-yang97/ENGEP-examples/blob/master/Example%20of%20identification%20of%20novel%20spatial%20archetypes%20in%20osmFISH.md)  is a detailed guide on how to work with ENGEP in osmFISH.
+This [example](https://github.com/Zhangxf-ccnu/ENGEP-examples/blob/master/Example%20of%20identification%20of%20novel%20spatial%20archetypes%20in%20osmFISH.md)  is a detailed guide on how to work with ENGEP in osmFISH.
 
 ### Prediction gene expression of unmeasured genes and identification of novel spatial archetypes in MERFISH
 
-This [example](https://github.com/st-yang97/ENGEP-examples/blob/master/Example%20of%20identification%20of%20novel%20spatial%20archetypes%20in%20MERFISH.md) is a detailed guide on how to work with ENGEP in MERFISH.
+This [example](https://github.com/Zhangxf-ccnu/ENGEP-examples/blob/master/Example%20of%20identification%20of%20novel%20spatial%20archetypes%20in%20MERFISH.md) is a detailed guide on how to work with ENGEP in MERFISH.
 
 
 ## Datasets
