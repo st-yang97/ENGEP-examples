@@ -173,8 +173,8 @@ We use manifold mixup to partition the unmeasured genes into two groups.
 
 ```
 c <- apply(as.matrix(pre_un@assays$RNA@scale.data[resultsfilter_un,],
-                  1,
-                   partition_threshold)
+           1,
+           partition_threshold)
 diag(c) <- 0
 threshold <- sum(c)/((dim(pre_un)[1])*(dim(pre_un)[1]-1))
 plot_score(maxcor,threshold=0.3933951)
@@ -205,7 +205,8 @@ For genes belonging to novel archetypes, we utilize hierarchical clustering to g
 unsimilar_genes  = names(maxcor)[which(maxcor<threshold)]
 corMat_un <- 
     stats::cor(as.matrix(t(pre_un@assays$RNA@scale.data[unsimilar_genes,])), 
-               as.matrix(t(pre_un@assays$RNA@scale.data[unsimilar_genes,])),                method = "pearson")
+               as.matrix(t(pre_un@assays$RNA@scale.data[unsimilar_genes,])),                
+               method = "pearson")
 dist_un <- 1-corMat_un
 dist_un <- as.dist(dist_un)
 hc <- hclust(dist_un, method = "ward.D")
